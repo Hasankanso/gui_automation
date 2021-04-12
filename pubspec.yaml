@@ -21,7 +21,6 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
-  refreshable_reorderable_list: ^0.0.1
   hive: ^2.0.2
   flutter_json_widget: ^1.0.2
   flutter:

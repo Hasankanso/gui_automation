@@ -15,7 +15,7 @@ class EnterTextCommand extends StatelessWidget with Command {
   String toJson() {
     return '{"type" : "enter_text", "text" : "${this.textController.text}", "delay"'
         ' : '
-        '${int.parse(delayController.text) / 1000}, "press_enter" : false, "start_delay" : ${int.parse(this.startDelayController.text) / 1000} }';
+        '${int.parse(delayController.text)}, "press_enter" : false, "start_delay" : ${int.parse(this.startDelayController.text)} }';
   }
 
   @override

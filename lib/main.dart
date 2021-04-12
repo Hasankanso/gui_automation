@@ -31,8 +31,12 @@ class MyApp extends StatelessWidget {
   static bool pyRunning = false;
 
   static void runPythonBackend(String commands) async {
-    String path = Hive.box<String>("settings").get(Settings.pythonCodePathKey);
-    if (path.isEmpty) throw ("set python code path first in settings page");
+    Box<String> settings = Hive.box<String>("settings");
+    String path = settings.get(Settings.pythonCodePathKey);
+    if (path == null || path.isEmpty) {
+      path = Settings.defaultPythonCodePath;
+      settings.put(Settings.pythonCodePathKey, Settings.defaultPythonCodePath);
+    }
 
     if (!MyApp.pyRunning) {
       MyApp.pyRunning = true;

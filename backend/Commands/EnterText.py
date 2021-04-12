@@ -19,8 +19,8 @@ class EnterText(Command):
             sys.exit(1)
 
     def execute(self, commands, commands_counter):
-        auto.sleep(1 + self.start_delay)
-        auto.write(self.text, interval=self.delay)
+        auto.sleep(1 + self.start_delay/1000)
+        auto.write(self.text, interval=self.delay/1000)
         if self.press_enter:
             auto.hotkey('enter')
 

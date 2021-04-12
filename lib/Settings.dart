@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hive/hive.dart';
@@ -7,6 +9,7 @@ class Settings extends StatelessWidget {
   Future<Box<String>> hiveBoxFuture;
   Box<String> box;
   static final String pythonCodePathKey = "pythonCodePath";
+  static final String defaultPythonCodePath = Directory.current.path + "/backend/main.py";
 
   Settings() {
     hiveBoxFuture = Hive.openBox("settings");
@@ -21,7 +24,8 @@ class Settings extends StatelessWidget {
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.hasData) {
               box = snapshot.data;
-              pythonPathController.text = box.get(pythonCodePathKey);
+              pythonPathController.text =
+                  box.get(pythonCodePathKey, defaultValue: defaultPythonCodePath);
               return Column(children: [
                 Expanded(
                     flex: 1,
@@ -36,11 +40,44 @@ class Settings extends StatelessWidget {
                             )),
                         Expanded(
                           flex: 2,
-                          child: IconButton(icon: Icon(Icons.more_horiz), onPressed: null),
+                          child: IconButton(
+                              icon: Icon(Icons.more_horiz),
+                              tooltip: "not "
+                                  "implemented yet",
+                              onPressed: null),
                         )
                       ],
                     )),
-                Spacer(flex: 4),
+                Spacer(flex: 3),
+                Expanded(
+                  flex: 1,
+                  child: Row(
+                    textDirection: TextDirection.rtl,
+                    children: [
+                      SizedBox(
+                        width: 40,
+                      ),
+                      MaterialButton(
+                        color: Colors.blue,
+                        child: Text("Save"),
+                        onPressed: () {
+                          box.put(pythonCodePathKey, pythonPathController.text);
+                        },
+                      ),
+                      SizedBox(
+                        width: 20,
+                      ),
+                      MaterialButton(
+                        color: Colors.grey,
+                        child: Text("Reset Default"),
+                        onPressed: () {
+                          pythonPathController.text = defaultPythonCodePath;
+                          box.put(pythonCodePathKey, pythonPathController.text);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
               ]);
             } else if (snapshot.hasError) {
               return Center(
@@ -49,17 +86,6 @@ class Settings extends StatelessWidget {
             }
             return Center(child: CircularProgressIndicator());
           }),
-      bottomNavigationBar: Container(
-        height: 50,
-        width: 100,
-        child: MaterialButton(
-          color: Colors.blue,
-          child: Text("Save"),
-          onPressed: () {
-            box.put(pythonCodePathKey, pythonPathController.text);
-          },
-        ),
-      ),
     );
   }
 }
