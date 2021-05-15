@@ -8,6 +8,7 @@ gui automation based on pyautogui python as backend and flutter desktop as front
 pip install pyautogui
 ```
 
+that's it, now you can try the app by running the executable file ```release/linux/automation```. Check the example down below.
 # Example
 
 It is tested on Linux based system Ubuntu 20.4<br>
