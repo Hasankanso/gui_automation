@@ -17,5 +17,4 @@ the following sequence will open a terminal write "python --version" in it then 
 
 ![alt text](https://github.com/Hasankanso/GUI_AUTOMATION/blob/c35f009fb1b3837db8c6446ecbac126553bf87b6/commands_json.png?raw=true)
 
-more will be added later: examples, instructions and images.
 
