@@ -10,6 +10,7 @@ pip install pyautogui
 
 # Example
 
+It is tested on Linux based system Ubuntu 20.4<br>
 the following sequence will open a terminal write "python --version" in it then press Enter. The process will be repeated 2 times (overall 3 times).
 
 ![alt text](https://github.com/Hasankanso/GUI_AUTOMATION/blob/c35f009fb1b3837db8c6446ecbac126553bf87b6/commands_gui.png?raw=true)
