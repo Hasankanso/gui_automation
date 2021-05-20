@@ -9,7 +9,7 @@ if __name__ == '__main__':
     parser.add_argument("--commands", help="enter json commands as string")
     args = parser.parse_args()
 
-    print("Backend: received commands: ", args.commands)
+    # load commands either from commands argument or from a provided json file.
     if args.commands is not None:
         commands = json.loads(args.commands)
     else:
@@ -19,17 +19,25 @@ if __name__ == '__main__':
                 sys.exit(1)
             commands = json.load(json_file)
 
+    print("Backend: received commands: ", commands, "\n\n")
+
+    # sub routines will be parsed also.
     commands = parse(commands)
 
+    # validate commands before any execution, this may reduce runtime unexpected behavior.
     valid = True
     for command in commands:
         if not command.is_valid():
             valid = False
             print("the following command is not valid: ", command.print())
 
+    # exit only if at least one command is not valid and after checking all commands and gave
+    # feedback to user
     if not valid:
         sys.exit(0)
 
+    # pass commands_counter (similar to program counter, pc), and the list of commands to every
+    # execution, this will help the repeat command to repeat a chunk of the commands list.
     commands_counter = 0
     for command in commands:
         command.execute(commands, commands_counter)

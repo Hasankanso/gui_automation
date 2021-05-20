@@ -9,6 +9,7 @@ from Commands.OpenTerminal import OpenTerminal
 from Commands.PressKey import PressKey
 from Commands.RepeatCommands import RepeatCommands
 from Commands.Sleep import Sleep
+from Commands.Routine import Routine
 import sys
 
 
@@ -40,4 +41,9 @@ def parse(data):
             commands_list.append(HotKey(command))
         elif command_type == RepeatCommands.type:
             commands_list.append(RepeatCommands(command))
+        elif command_type == Routine.type:
+            commands_list.append(Routine(command))
+        else:
+            print("Backend: Error: Command type not implemented or there's typo in type name ", command)
+            sys.exit(1)
     return commands_list
