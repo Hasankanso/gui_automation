@@ -19,4 +19,4 @@ class PressKey(Command):
         auto.press(self.key)
 
     def is_valid(self):
-        return isinstance(self.key, str)
+        return isinstance(self.key, str) and self.key != ""
