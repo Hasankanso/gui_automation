@@ -29,7 +29,7 @@ def parse(data):
         except KeyError:
             print("Backend: Error: command type is not found in json item:\n ", command)
             sys.exit(1)
-
+            
         # search through list of commands to instantiate object
         for command_ref in command_references:
             print('command name : {}'.format(command_ref))
