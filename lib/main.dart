@@ -8,6 +8,7 @@ import 'package:automation/commands/CommandTile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'Settings.dart';
 
@@ -19,8 +20,9 @@ import 'Settings.dart';
 //5.defensive programming, check input types and highlight if a required command parameter is not assigned.
 
 void main() async {
-  var path = Directory.current.path;
-  Hive.init(path);
+  WidgetsFlutterBinding.ensureInitialized();
+  final path = await getApplicationDocumentsDirectory();
+  Hive.init(path.path);
   await Hive.openBox<String>("settings");
 
   runApp(MyApp());
