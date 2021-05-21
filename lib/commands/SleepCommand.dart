@@ -1,4 +1,5 @@
 import 'package:automation/commands/Command.dart';
+import 'package:automation/commands/CommandTile.dart';
 import 'package:flutter/material.dart';
 
 class SleepCommand extends StatelessWidget with Command {
@@ -34,5 +35,9 @@ class SleepCommand extends StatelessWidget with Command {
   @override
   bool isValid() {
     return this.keyController.text.isNotEmpty && double.tryParse(this.keyController.text) != null;
+  }
+
+  static createTile({Function(int p1)? onSelect}) {
+    return () => CommandTile(key: UniqueKey(), onSelect: onSelect, child: SleepCommand());
   }
 }

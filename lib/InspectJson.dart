@@ -4,14 +4,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 class InspectJson extends StatelessWidget {
-  final String jsonString;
+  final String? jsonString;
 
-  TextEditingController jsonTextController = new TextEditingController();
+  final TextEditingController jsonTextController = new TextEditingController();
 
   static final String pythonCodePathKey = "pythonCodePath";
 
   InspectJson({this.jsonString}) {
-    jsonTextController.text = jsonString;
+    jsonTextController.text = jsonString!;
   }
 
   @override

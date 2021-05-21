@@ -1,8 +1,9 @@
 import 'package:automation/commands/Command.dart';
+import 'package:automation/commands/CommandTile.dart';
 import 'package:flutter/material.dart';
 
 class MouseClick extends StatefulWidget with Command {
-  String dropdownValue = "left_click";
+  String? dropdownValue = "left_click";
   bool left = true;
 
   @override
@@ -20,6 +21,10 @@ class MouseClick extends StatefulWidget with Command {
     } else {
       return '{"type" : "right_click"}';
     }
+  }
+
+  static createTile({Function(int p1)? onSelect}) {
+    return () => CommandTile(key: UniqueKey(), onSelect: onSelect, child: MouseClick());
   }
 }
 
@@ -48,7 +53,7 @@ class _MouseClickState extends State<MouseClick> {
             height: 2,
             color: Colors.deepPurpleAccent,
           ),
-          onChanged: (String newValue) {
+          onChanged: (String? newValue) {
             setState(() {
               widget.dropdownValue = newValue;
               if (newValue == "left_click")

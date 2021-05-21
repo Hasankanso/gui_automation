@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:automation/CommandsPalette.dart';
 import 'package:automation/Infromation.dart';
 import 'package:automation/InspectJson.dart';
+import 'package:automation/Styles.dart';
 import 'package:automation/commands/Command.dart';
 import 'package:automation/commands/CommandTile.dart';
 import 'package:flutter/material.dart';
@@ -29,12 +30,12 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  static final ValueNotifier<int> selectedItem = ValueNotifier<int>(-1);
+  static final ValueNotifier<int> selectedItem = ValueNotifier<int>(-3);
   static bool pyRunning = false;
 
   static void runPythonBackend(String commands) async {
     Box<String> settings = Hive.box<String>("settings");
-    String path = settings.get(Settings.pythonCodePathKey);
+    String? path = settings.get(Settings.pythonCodePathKey);
     if (path == null || path.isEmpty) {
       path = Settings.defaultPythonCodePath;
       settings.put(Settings.pythonCodePathKey, Settings.defaultPythonCodePath);
@@ -70,19 +71,20 @@ class MyHome extends StatefulWidget {
 class _MyHomeState extends State<MyHome> {
   List<CommandTile> items = [];
   bool isShiftHeld = false;
+  bool showContextualActions = false;
 
   String commands2Json() {
     String json = "[";
 
     if (items.isEmpty) return "{}";
 
-    Command first = items[0].command;
+    Command first = items[0].command!;
 
     if (!first.isValid()) return "{}";
 
     json += first.toJson();
     for (int i = 1; i < items.length; i++) {
-      Command item = items[i].command;
+      Command item = items[i].command!;
 
       if (!item.isValid()) break;
 
@@ -95,25 +97,110 @@ class _MyHomeState extends State<MyHome> {
   }
 
   void onItemSelect(int newId) {
-    MyApp.selectedItem.value = newId;
+    if (newId >= 0)
+      showContextualActions = true;
+    else
+      showContextualActions = false;
+
+    if ((newId + 1) * (MyApp.selectedItem.value + 1) < 0) {
+      // +1 to avoid 0 case
+      setState(() {
+        MyApp.selectedItem.value = newId;
+      });
+    } else {
+      MyApp.selectedItem.value = newId;
+    }
   }
 
   void _onPick(CommandTile newCommand) {
     setState(() {
+      newCommand.id = items.length;
       items.add(newCommand);
     });
+  }
+
+  void removeItem(int index) {
+    if (index >= 0 && index < items.length) {
+      setState(() {
+        items.removeAt(index);
+
+        for (int i = index; i < items.length; i++) {
+          items[i].id -= 1;
+        }
+
+        if (index < items.length) {
+          items[index].select();
+          onItemSelect(index);
+        } else if (index > 0) {
+          items[index - 1].select();
+          onItemSelect(index - 1);
+        } else {
+          onItemSelect(-3);
+        }
+      });
+    }
+  }
+
+  void moveItemUp(int index) {
+    if (index > 0) {
+      CommandTile currTile = items[index];
+      setState(() {
+        items[index - 1].id = index;
+        currTile.id = index - 1;
+
+        items[index] = items[index - 1];
+        items[index - 1] = currTile;
+        onItemSelect(index - 1);
+      });
+    }
+  }
+
+  void moveItemDown(int index) {
+    if (index < items.length - 1) {
+      CommandTile currTile = items[index];
+      setState(() {
+        items[index + 1].id = index;
+        currTile.id = index + 1;
+
+        items[index] = items[index + 1];
+        items[index + 1] = currTile;
+        onItemSelect(index + 1);
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: showContextualActions
+          ? AppBar(
+              actions: [
+                IconButton(
+                  icon: Icon(Icons.delete, size: Styles.iconSize(context), color: Colors.red),
+                  onPressed: () {
+                    removeItem(MyApp.selectedItem.value);
+                  },
+                ),
+                IconButton(
+                  icon:
+                      Icon(Icons.arrow_upward, size: Styles.iconSize(context), color: Colors.white),
+                  onPressed: () {
+                    moveItemUp(MyApp.selectedItem.value);
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.arrow_downward,
+                      size: Styles.iconSize(context), color: Colors.white),
+                  onPressed: () {
+                    moveItemDown(MyApp.selectedItem.value);
+                  },
+                ),
+              ],
+            )
+          : AppBar(),
       body: Row(
         children: [
-          Expanded(
-              flex: 2,
-              child: CommandsPalette(
-                  onPick: _onPick, onSelect: onItemSelect, itemsCount: items.length)),
+          Expanded(flex: 2, child: CommandsPalette(onPick: _onPick, onSelect: onItemSelect)),
           Expanded(
             flex: 10,
             child: Column(
@@ -125,26 +212,30 @@ class _MyHomeState extends State<MyHome> {
                   flex: 1,
                   child: Row(
                     children: [
-                      Spacer(flex: 8),
+                      Spacer(flex: 2),
                       Expanded(
                           flex: 1,
                           child: IconButton(
-                            icon: Icon(Icons.info_outline),
+                            icon: Icon(Icons.info_outline, size: Styles.iconSize(context)),
                             onPressed: () {
                               Navigator.push(
                                   context, MaterialPageRoute(builder: (context) => Information()));
                             },
                           )),
+                      Spacer(),
                       Expanded(
                           flex: 1,
                           child: IconButton(
-                            icon: Icon(Icons.settings),
+                            icon: Icon(
+                              Icons.settings,
+                              size: Styles.iconSize(context),
+                            ),
                             onPressed: () {
                               Navigator.push(
                                   context, MaterialPageRoute(builder: (context) => Settings()));
                             },
                           )),
-                      Spacer(flex: 1),
+                      Spacer(flex: 2),
                       Expanded(
                         flex: 5,
                         child: MaterialButton(
@@ -217,47 +308,11 @@ class _MyHomeState extends State<MyHome> {
     assert(position == 0 || position < items.length);
 
     if (event.isKeyPressed(LogicalKeyboardKey.delete)) {
-      if (position >= 0 && position < items.length) {
-        setState(() {
-          items.removeAt(position);
-
-          for (int i = position; i < items.length; i++) {
-            items[i].id -= 1;
-          }
-
-          if (position < items.length) {
-            items[position].select();
-            onItemSelect(position);
-          } else if (position > 0) {
-            items[position - 1].select();
-            onItemSelect(position - 1);
-          }
-        });
-      }
+      removeItem(position);
     } else if (isShiftHeld && event.isKeyPressed(LogicalKeyboardKey.arrowUp)) {
-      if (position > 0) {
-        CommandTile currTile = items[position];
-        setState(() {
-          items[position - 1].id = position;
-          currTile.id = position - 1;
-
-          items[position] = items[position - 1];
-          items[position - 1] = currTile;
-          onItemSelect(position - 1);
-        });
-      }
+      moveItemUp(position);
     } else if (isShiftHeld && event.isKeyPressed(LogicalKeyboardKey.arrowDown)) {
-      if (position < items.length - 1) {
-        CommandTile currTile = items[position];
-        setState(() {
-          items[position + 1].id = position;
-          currTile.id = position + 1;
-
-          items[position] = items[position + 1];
-          items[position + 1] = currTile;
-          onItemSelect(position + 1);
-        });
-      }
+      moveItemDown(position);
     } else if (event.isKeyPressed(LogicalKeyboardKey.arrowUp)) {
       if (position >= 1 && position < items.length) {
         setState(() {

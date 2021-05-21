@@ -1,4 +1,5 @@
 import 'package:automation/commands/Command.dart';
+import 'package:automation/commands/CommandTile.dart';
 import 'package:flutter/material.dart';
 
 class EnterTextCommand extends StatelessWidget with Command {
@@ -68,5 +69,9 @@ class EnterTextCommand extends StatelessWidget with Command {
         this.delayController.text.isNotEmpty &&
         int.tryParse(this.startDelayController.text) != null &&
         int.tryParse(this.delayController.text) != null;
+  }
+
+  static createTile({Function(int p1)? onSelect}) {
+    return () => CommandTile(key: UniqueKey(), onSelect: onSelect, child: EnterTextCommand());
   }
 }

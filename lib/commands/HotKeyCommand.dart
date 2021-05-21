@@ -1,4 +1,5 @@
 import 'package:automation/commands/Command.dart';
+import 'package:automation/commands/CommandTile.dart';
 import 'package:flutter/material.dart';
 
 class HotKeyCommand extends StatelessWidget with Command {
@@ -7,11 +8,11 @@ class HotKeyCommand extends StatelessWidget with Command {
   @override
   String toJson() {
     String keys = "[";
-    if (this.listController.controllers.isNotEmpty) {
-      keys += '"' + this.listController.controllers.first.text + '"';
+    if (this.listController.controllers!.isNotEmpty) {
+      keys += '"' + this.listController.controllers!.first.text + '"';
     }
-    for (int i = 1; i < this.listController.controllers.length; i++) {
-      String keyText = this.listController.controllers[i].text;
+    for (int i = 1; i < this.listController.controllers!.length; i++) {
+      String keyText = this.listController.controllers![i].text;
       if (keyText.isEmpty) break;
 
       keys += ", " + '"' + keyText + '"';
@@ -46,29 +47,28 @@ class HotKeyCommand extends StatelessWidget with Command {
   }
 
   @override
-  IconData icon() {
-    return Icons.local_fire_department;
-  }
-
-  @override
   bool isValid() {
-    for (int i = 0; i < this.listController.controllers.length; i++) {
-      if (this.listController.controllers.isEmpty) return false;
+    for (int i = 0; i < this.listController.controllers!.length; i++) {
+      if (this.listController.controllers!.isEmpty) return false;
     }
 
     return true;
   }
+
+  static createTile({Function(int p1)? onSelect}) {
+    return () => CommandTile(key: UniqueKey(), onSelect: onSelect, child: HotKeyCommand());
+  }
 }
 
 class _AutoExtensionList extends StatefulWidget {
-  List<TextEditingController> controllers;
-  final _AutoExtensionListController controller;
+  List<TextEditingController>? controllers;
+  final _AutoExtensionListController? controller;
 
   _AutoExtensionList({this.controller}) {
     if (controllers == null) {
       controllers = [];
     }
-    controller.controllers = controllers;
+    controller!.controllers = controllers;
   }
 
   @override
@@ -76,15 +76,14 @@ class _AutoExtensionList extends StatefulWidget {
 }
 
 class __AutoExtensionListState extends State<_AutoExtensionList> {
-  List<Widget> _keyItems;
+  late List<Widget> _keyItems;
 
   @override
   void initState() {
-    print("init state");
     TextEditingController tec = TextEditingController();
     _keyItems = [
       _TextField(
-        key: Key(widget.controllers.length.toString()),
+        key: Key(widget.controllers!.length.toString()),
         controller: tec,
         allControllers: widget.controllers,
         addItem: addItem,
@@ -92,7 +91,7 @@ class __AutoExtensionListState extends State<_AutoExtensionList> {
       )
     ];
 
-    widget.controllers.add(tec);
+    widget.controllers!.add(tec);
 
     super.initState();
   }
@@ -100,14 +99,14 @@ class __AutoExtensionListState extends State<_AutoExtensionList> {
   void removeItem() {
     setState(() {
       _keyItems.removeLast();
-      widget.controllers.removeLast();
+      widget.controllers!.removeLast();
 
       for (int i = _keyItems.length - 1; i >= 1; i--) {
-        if (widget.controllers[i].text.isNotEmpty) {
+        if (widget.controllers![i].text.isNotEmpty) {
           break;
         }
         _keyItems.removeLast();
-        widget.controllers.removeLast();
+        widget.controllers!.removeLast();
       }
     });
   }
@@ -116,13 +115,13 @@ class __AutoExtensionListState extends State<_AutoExtensionList> {
     TextEditingController tec = new TextEditingController();
     setState(() {
       _keyItems.add(_TextField(
-        key: Key(widget.controllers.length.toString()),
+        key: Key(widget.controllers!.length.toString()),
         controller: tec,
         allControllers: widget.controllers,
         addItem: addItem,
         removeItem: removeItem,
       ));
-      widget.controllers.add(tec);
+      widget.controllers!.add(tec);
     });
   }
 
@@ -138,15 +137,15 @@ class __AutoExtensionListState extends State<_AutoExtensionList> {
 }
 
 class _AutoExtensionListController {
-  List<TextEditingController> controllers;
+  List<TextEditingController>? controllers;
 }
 
 class _TextField extends StatelessWidget {
-  final Function() addItem;
-  final Function() removeItem;
-  final TextEditingController controller;
-  final List<TextEditingController> allControllers;
-  final Key key;
+  final Function()? addItem;
+  final Function()? removeItem;
+  final TextEditingController? controller;
+  final List<TextEditingController>? allControllers;
+  final Key? key;
 
   _TextField({this.key, this.controller, this.allControllers, this.addItem, this.removeItem});
 
@@ -161,14 +160,13 @@ class _TextField extends StatelessWidget {
         controller: controller,
         keyboardType: TextInputType.text,
         onChanged: (value) {
-          if (allControllers.last.text.isNotEmpty) {
-            addItem();
-          } else if (allControllers.length > 1 &&
-              allControllers[allControllers.length - 1].text.isEmpty &&
-              allControllers[allControllers.length - 2].text.isEmpty) {
-            removeItem();
+          if (allControllers!.last.text.isNotEmpty) {
+            addItem!();
+          } else if (allControllers!.length > 1 &&
+              allControllers![allControllers!.length - 1].text.isEmpty &&
+              allControllers![allControllers!.length - 2].text.isEmpty) {
+            removeItem!();
           }
-          print(allControllers.length);
         },
       ),
     );

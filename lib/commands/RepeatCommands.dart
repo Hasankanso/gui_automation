@@ -1,11 +1,12 @@
 import 'package:automation/commands/Command.dart';
+import 'package:automation/commands/CommandTile.dart';
 import 'package:flutter/material.dart';
 
 class RepeatCommands extends StatefulWidget with Command {
   @override
   _RepeatCommandsState createState() => _RepeatCommandsState();
   final TextEditingController timesTextController = new TextEditingController(text: "2");
-  String dropdownValue = 'all_above';
+  String? dropdownValue = 'all_above';
 
   @override
   bool isValid() {
@@ -16,6 +17,10 @@ class RepeatCommands extends StatefulWidget with Command {
   @override
   String toJson() {
     return '{"type" : "repeat_commands", "times" : ${this.timesTextController.text}, "side" : "${this.dropdownValue}" }';
+  }
+
+  static createTile({Function(int p1)? onSelect}) {
+    return () => CommandTile(key: UniqueKey(), onSelect: onSelect, child: RepeatCommands());
   }
 }
 
@@ -48,7 +53,7 @@ class _RepeatCommandsState extends State<RepeatCommands> {
                   height: 2,
                   color: Colors.deepPurpleAccent,
                 ),
-                onChanged: (String newValue) {
+                onChanged: (String? newValue) {
                   setState(() {
                     widget.dropdownValue = newValue;
                   });

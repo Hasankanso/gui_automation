@@ -1,4 +1,5 @@
 import 'package:automation/commands/Command.dart';
+import 'package:automation/commands/CommandTile.dart';
 import 'package:flutter/material.dart';
 
 class MoveMouseAbsolute extends StatelessWidget with Command {
@@ -55,5 +56,9 @@ class MoveMouseAbsolute extends StatelessWidget with Command {
         this.yController.text.isNotEmpty &&
         double.tryParse(this.xController.text) != null &&
         double.tryParse(this.yController.text) != null;
+  }
+
+  static CommandTile Function() createTile({Function(int p1)? onSelect}) {
+    return () => CommandTile(key: UniqueKey(), onSelect: onSelect, child: MoveMouseAbsolute());
   }
 }

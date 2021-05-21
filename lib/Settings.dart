@@ -6,8 +6,8 @@ import 'package:hive/hive.dart';
 
 class Settings extends StatelessWidget {
   final TextEditingController pythonPathController = new TextEditingController();
-  Future<Box<String>> hiveBoxFuture;
-  Box<String> box;
+  Future<Box<String>>? hiveBoxFuture;
+  Box<String>? box;
   static final String pythonCodePathKey = "pythonCodePath";
   static final String defaultPythonCodePath = Directory.current.path + "/backend/main.py";
 
@@ -25,7 +25,7 @@ class Settings extends StatelessWidget {
             if (snapshot.hasData) {
               box = snapshot.data;
               pythonPathController.text =
-                  box.get(pythonCodePathKey, defaultValue: defaultPythonCodePath);
+                  box!.get(pythonCodePathKey, defaultValue: defaultPythonCodePath)!;
               return Column(children: [
                 Expanded(
                     flex: 1,
@@ -61,7 +61,7 @@ class Settings extends StatelessWidget {
                         color: Colors.blue,
                         child: Text("Save"),
                         onPressed: () {
-                          box.put(pythonCodePathKey, pythonPathController.text);
+                          box!.put(pythonCodePathKey, pythonPathController.text);
                         },
                       ),
                       SizedBox(
@@ -72,7 +72,7 @@ class Settings extends StatelessWidget {
                         child: Text("Reset Default"),
                         onPressed: () {
                           pythonPathController.text = defaultPythonCodePath;
-                          box.put(pythonCodePathKey, pythonPathController.text);
+                          box!.put(pythonCodePathKey, pythonPathController.text);
                         },
                       ),
                     ],
