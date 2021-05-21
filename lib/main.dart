@@ -21,7 +21,6 @@ import 'Settings.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // var path = Directory.current.path;
   final path = await getApplicationDocumentsDirectory();
   Hive.init(path.path);
   await Hive.openBox<String>("settings");
@@ -43,7 +42,6 @@ class MyApp extends StatelessWidget {
 
     if (!MyApp.pyRunning) {
       MyApp.pyRunning = true;
-      Process.run("source", ['backend']);
       Process.run(
         "python",
         [path, '--commands', commands],

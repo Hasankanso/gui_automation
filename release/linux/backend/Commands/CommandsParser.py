@@ -10,9 +10,11 @@ def parse(data):
     # list of all commands to run
     command_list = []
 
-    path = 'Commands'
+
+    path = os.path.dirname(os.path.realpath(__file__))
+    files = os.listdir(path)
     # get list of all .py files in directory except this script
-    command_filenames = [x for x in os.listdir(path) if x.endswith('.py') and x != os.path.basename(__file__)]
+    command_filenames = [x for x in files if x.endswith('.py') and x != os.path.basename(__file__)]
     # bring the Command.py to the front of the list to be loaded in first
     command_filenames.insert(0, command_filenames.pop(command_filenames.index('Command.py')))
 
@@ -21,7 +23,7 @@ def parse(data):
         command_name = os.path.splitext(cmd_file)[0]
 
         # load module Commands.'classname'
-        module = importlib.import_module('{0}.{1}'.format(path, command_name))
+        module = importlib.import_module('Commands.{0}'.format(command_name))
 
         # iterate over attributes of each module and add classes only
         for attribute_name in dir(module):
