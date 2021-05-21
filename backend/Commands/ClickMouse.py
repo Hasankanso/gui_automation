@@ -1,30 +1,31 @@
 from Commands.Command import Command, auto
+import sys
 
 
-class LeftClick(Command):
-    type = "left_click"
+class click(Command):
+    type = "click"
 
-    def __init__(self):
-        super().__init__('{"type" : "left_click"}')
-
+    def __init__(self, json):
+        super().__init__(json)
+        try:
+            self.button = json["button"]
+        except KeyError:
+            print("Backend: Error: missing 'button' parameter, set default to left click" )
+            self.button = "left"
+            sys.exit(1)
+        
     def execute(self, commands, commands_counter):
-        auto.leftClick()
+            try:
+                if self.button != 'double':
+                    auto.click(button=self.button)
+                else:
+                    auto.doubleClick()
+            except  auto.PyAutoGUIException:
+                print(auto.PyAutoGUIException)
+                sys.exit(1)
 
     def is_valid(self):
-        return True
+        return self.button in ['left', 'right', 'middle', 'double']
 
     def print(self):
         return ""
-
-
-class RightClick(Command):
-    type = "right_click"
-
-    def __init__(self):
-        super().__init__('{"type" : "right_click"}')
-
-    def execute(self, commands, commands_counter):
-        auto.rightClick()
-
-    def is_valid(self):
-        return True

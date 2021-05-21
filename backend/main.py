@@ -1,5 +1,5 @@
 import json
-from Commands.CommandsParser import parse
+from Commands.CommandsParser import parse, load_classes
 import argparse
 import sys
 
@@ -22,7 +22,7 @@ if __name__ == '__main__':
     print("Backend: received commands: ", commands, "\n\n")
 
     # sub routines will be parsed also.
-    commands = parse(commands)
+    commands = parse(commands, load_classes())
 
     # validate commands before any execution, this may reduce runtime unexpected behavior.
     valid = True

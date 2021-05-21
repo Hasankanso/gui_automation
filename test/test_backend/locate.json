@@ -1,0 +1,4 @@
+[
+  {"type":"locate", "name":"find_tab", "template_path":"apple.png"},
+  {"type":"move_mouse_absolute", "result":"find_tab.template_position"}
+  ]

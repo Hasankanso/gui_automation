@@ -4,11 +4,10 @@ import sys
 import inspect
 
 
-def parse(data):
+def load_classes():
+
     # blank dictionary of all possible command references
     command_references = {}
-    # list of all commands to run
-    command_list = []
 
     path = 'Commands'
     # get list of all .py files in directory except this script
@@ -34,6 +33,13 @@ def parse(data):
                 except AttributeError:
                     # class has no type, ignore it, since Command class has no type.
                     pass
+    return command_references
+
+
+def parse(data, command_references):
+
+    # list of all commands to run
+    command_list = []
 
     # iterate through list of commands given from main
     for command in data:
@@ -45,7 +51,6 @@ def parse(data):
 
         # search through list of commands to instantiate object
         try:
-            print('command data {}'.format(command))
             constructor = command_references[command_type]
             command_list.append(constructor(command))
         except KeyError:
